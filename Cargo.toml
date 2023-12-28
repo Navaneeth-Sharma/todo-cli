@@ -1,0 +1,13 @@
+[package]
+name = "todo-cli"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+lazy_static = "1.4.0"
+redis = "0.24.0"
+clap = { version = "4.4.11", features = ["derive"] }
+uuid = { version = "1.6.1", features = ["v4"] }
+
