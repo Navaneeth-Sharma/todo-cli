@@ -7,6 +7,7 @@
 ```sh 
 cargo build --release
 sudo cp ./target/release/todo-cli /usr/local/bin/
+todo-cli --help
 ```
 
 
