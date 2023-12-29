@@ -73,7 +73,7 @@ fn get_todo(
     project_name: &String,
     uid: &String,
     status: &String,
-    topic: &Vec<String>,
+    _topic: &Vec<String>,
 ) -> redis::RedisResult<()> {
     let client = redis::Client::open("redis://127.0.0.1:6379/")?;
     let mut con = client.get_connection()?;
@@ -126,7 +126,7 @@ fn update_todo(
     project_name: &String,
     uid: &String,
     status: &String,
-    topic: &Vec<String>,
+    _topic: &Vec<String>,
 ) -> redis::RedisResult<()> {
     let client = redis::Client::open("redis://127.0.0.1:6379/")?;
     let mut con = client.get_connection()?;
