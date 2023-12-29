@@ -42,7 +42,6 @@ fn add_todo(
 
     let uid = Uuid::new_v4();
 
-    // let key = uid.to_string() + "|" +
     let key = project_name.to_owned().to_lowercase().replace(" ", "-") + "|" + &uid.to_string();
 
     let todo = Todo {
@@ -52,17 +51,11 @@ fn add_todo(
         topic: topic.clone(),
     };
 
-    println!("TODO STRUCT PASSED");
-
     let j = serde_json::to_string(&todo).expect("Failed to serialize to JSON");
 
-    // println!("{:?}", j);
-
-    // for t in todo {
     let _: () = redis::cmd("SET").arg(&key).arg(&j).query(&mut con)?;
 
     println!("key: {} -> todo: {:?}", &key, &j);
-    // }
 
     let result: Option<String> = redis::cmd("GET").arg(&key).query(&mut con).unwrap();
 
@@ -104,13 +97,24 @@ fn get_todo(
     }
 
     let keys: Vec<String> = redis::cmd("keys").arg(search_keys).query(&mut con).unwrap();
-    println!("TODOS: for the Project \"{}\"", &project_name);
+    println!(
+        "TODOS: for the Project \"{}\" with status {}",
+        &project_name, &status
+    );
 
     for key in keys {
         let result: Option<String> = redis::cmd("GET").arg(&key).query(&mut con).unwrap();
 
         if let Some(value) = result {
-            println!("    \u{02192} {:}", value);
+            let todo = serde_json::from_str::<Todo>(&value).unwrap();
+            if status != "" {
+                if status == &todo.status {
+                    println!("    \u{02192} {:}", value);
+                }
+            } else {
+                println!("    \u{02192} {:}", value);
+            }
+            // println!("    \u{02192} {:}", value);
         } else {
             println!("Key not found in Redis");
         }
@@ -126,8 +130,6 @@ fn update_todo(
 ) -> redis::RedisResult<()> {
     let client = redis::Client::open("redis://127.0.0.1:6379/")?;
     let mut con = client.get_connection()?;
-
-    let mut search_keys: String = Default::default();
 
     let key = project_name.to_owned().to_lowercase().replace(" ", "-") + "|" + &uid.to_string();
 
